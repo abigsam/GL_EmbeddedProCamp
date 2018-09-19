@@ -50,3 +50,20 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+#Ignore STD lib files
+*.pdf
+*.rtf
+README.txt
+*.chm
+*jpg
+*.png
+*bmp
+/lecture_1/STM32F30x_DSP_StdPeriph_Lib_V1.2.3/Utilities/
+/lecture_1/STM32F30x_DSP_StdPeriph_Lib_V1.2.3/_htmresc/
+/lecture_1/STM32F30x_DSP_StdPeriph_Lib_V1.2.3/Libraries/STM32F30x_I2C_CPAL_Driver/
+/lecture_1/STM32F30x_DSP_StdPeriph_Lib_V1.2.3/Projects/
+/lecture_1/STM32F30x_DSP_StdPeriph_Lib_V1.2.3/Libraries/CMSIS/Documentation/
+/lecture_1/STM32F30x_DSP_StdPeriph_Lib_V1.2.3/Libraries/CMSIS/DSP_Lib/
+/lecture_1/STM32F30x_DSP_StdPeriph_Lib_V1.2.3/Libraries/CMSIS/RTOS/
+
