@@ -13,12 +13,13 @@ typedef struct stack {
     struct stack *prev;
 } stack_t;
 
-int create_stack(int value);
-int push(int value);
-int pop(int *value);
-int read(int *value);
+int stack_init(int value);
+void stack_deinit(void);
+int stack_push(int value);
+int stack_pop(int *value);
+int stack_read(int *value);
 //Auxiliary function
-void print_list(stack_t *head);
+static void print_list(stack_t *head);
 
 //Pointer to stack-linked list head
 static stack_t *head;
@@ -30,11 +31,11 @@ int main()
     int temp = 0;
     
     //Init stack
-    create_stack(STACK_INIT);
+    stack_init(STACK_INIT);
     printf("Push value: %d\n", STACK_INIT);
     //Push some values
     for (int cnt = STACK_INIT+1; cnt <= STACK_INIT+10; cnt++) {
-        if (push(cnt) != 0) {
+        if (stack_push(cnt) != 0) {
             printf("Push failure\n");
             return -1;
         }
@@ -43,20 +44,20 @@ int main()
     //Print stack
     print_list(head);
     //Read last value
-    read(&temp);
+    stack_read(&temp);
     printf("Read last value of the stak: %d\n", temp);
     //Pop values
     for (int cnt = 0; cnt < 4; cnt++) {
-        if (pop(&temp) != 0) {
+        if (stack_pop(&temp) != 0) {
             printf("Pop failure\n");
             return -2;
         }
         printf("Pop value: %d\n", temp);
     }
-    //Print stack after pop operations
+    //Print stack after stack_pop operations
     print_list(head);
     //Read last value
-    read(&temp);
+    stack_read(&temp);
     printf("Read last value of the stak: %d\n", temp);
     
     
@@ -69,7 +70,7 @@ int main()
  * @param   value: value for initial stack element
  * @retval  '0' if success
  */
-int create_stack(int value)
+int stack_init(int value)
 {
     stack_t *ptr = malloc(sizeof(stack_t));
     if (ptr != NULL) {
@@ -83,11 +84,30 @@ int create_stack(int value)
 }
 
 /**
+ * Deinit & free all elements of stack
+ * @param   None
+ * @retval  None
+ */
+void stack_deinit(void)
+{
+    stack_t *ptr_head = head;
+    int temp;
+    /* Pop values until header will be last */
+    if (head != NULL) {
+        while(head->next != NULL) {
+            stack_pop(temp)
+        }
+        //Delete header
+        free(header);
+    }
+}
+
+/**
  * Push value to the stack
- * @param   value: value to push
+ * @param   value: value to stack_push
  * @retval  '0' if success
  */
-int push(int value)
+int stack_push(int value)
 {
     stack_t *ptr_head = head;
     stack_t *ptr_new = malloc(sizeof(stack_t));
@@ -113,7 +133,7 @@ int push(int value)
  * @param   value: pointer to copy value from the stack
  * @retval  '0' if success
  */
-int pop(int *value)
+int stack_pop(int *value)
 {
     stack_t *ptr_head = head;
     stack_t *ptr_prev;
@@ -138,7 +158,7 @@ int pop(int *value)
  * @param   value: pointer to copy value from the stack
  * @retval  '0' if success
  */
-int read(int *value)
+int stack_read(int *value)
 {
     stack_t *ptr_head = head;
     if(ptr_head != NULL) {
@@ -155,7 +175,7 @@ int read(int *value)
 /**
  * Print list
  */
-void print_list(stack_t *head)
+static void print_list(stack_t *head)
 {
     stack_t *ptr = head;
     printf("head(");
