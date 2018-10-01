@@ -5,12 +5,12 @@
 
 #define CHECK_ELEMENT   (3)
 
-list_t *head;
-
 int main()
 {
-    if (NULL == head) {
-        printf("Memmory allocation error\n");
+    list_t *head;
+    
+    if (list_init(head, 0) < 0) {
+        printf("List init error error\n");
         return -1;
     }
     /* Add elements to list */

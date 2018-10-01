@@ -14,6 +14,7 @@ typedef struct list {
     struct list *next;
 } list_t;
 
+int list_init(list_t *head, int value);
 int list_add(list_t *head, int value);
 int list_remove(list_t *head, int value);
 int list_is(list_t *head, int val);
