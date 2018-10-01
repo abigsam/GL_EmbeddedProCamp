@@ -4,6 +4,23 @@
 
 
 /**
+ * Ini list with first value
+ * @param   head: pointer to the list header
+ * @param   value: value of new element
+ * @retval  0 if success, if -1 memory allocation error
+ */
+int list_init(list_t *head, int value)
+{
+    list_t *ptr = malloc(sizeof(list_t));
+    if (NULL == ptr) {
+        return -1;
+    }
+    ptr->value = value;
+    ptr->next = NULL;
+    return 0;
+}
+
+/**
  * Add element to list
  * @param   head: pointer to the list header
  * @param   value: value of new element
@@ -17,13 +34,13 @@ int list_add(list_t *head, int value)
         ptr = ptr->next;
     }
     ptrnew = malloc(sizeof(list_t));
-    if (ptrnew != NULL) {
-        ptr->next = ptrnew;
-        ptr->next->value = value;
-        ptr->next->next = NULL;
-        return 0;
+    if (NULL == ptrnew) {
+        return -1;
     }
-    return -1;
+    ptr->next = ptrnew;
+    ptr->next->value = value;
+    ptr->next->next = NULL;
+    return 0;
 }
 
 /**
@@ -36,7 +53,8 @@ int list_remove(list_t *head, int value)
 {
     list_t *ptr = head;
     list_t *ptr_delet;
-    while(ptr->next != NULL) {
+    //while(ptr->next != NULL) {
+    for(;;) {
         if (ptr->value == value) {
             ptr->value = ptr->next->value;
             ptr_delet = ptr->next;
@@ -44,9 +62,13 @@ int list_remove(list_t *head, int value)
             free(ptr_delet);
             return 0;
         }
-        ptr = ptr->next;
+        if (ptr->next != NULL) {
+            ptr = ptr->next;
+        }
+        else {
+            return -1; //Reached last element, element didn't find
+        }
     }
-    return -1; //List element didn't find
 }
 
 /**
