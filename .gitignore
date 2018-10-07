@@ -50,3 +50,9 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+# Ignore Keil files
+Listings
+Objects
+DebugConfig
+*.Andrey
