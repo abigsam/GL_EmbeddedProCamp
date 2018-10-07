@@ -10,6 +10,7 @@
       <TargetName>STM32F303VCTx</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
+      <pCCUsed>5060422::V5.06 update 4 (build 422)::ARMCC</pCCUsed>
       <TargetOption>
         <TargetCommonOption>
           <Device>STM32F303VCTx</Device>
@@ -334,7 +335,7 @@
               <MiscControls></MiscControls>
               <Define></Define>
               <Undefine></Undefine>
-              <IncludePath>.\Sources\app</IncludePath>
+              <IncludePath>.\Sources\app;.\Sources\CMSIS\Device\ST\STM32F3xx\Include;.\Sources\CMSIS\Include;.\Sources\libs</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -387,9 +388,28 @@
         </Group>
         <Group>
           <GroupName>CMSIS</GroupName>
+          <Files>
+            <File>
+              <FileName>system_stm32f3xx.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\CMSIS\Device\ST\STM32F3xx\Source\Templates\system_stm32f3xx.c</FilePath>
+            </File>
+            <File>
+              <FileName>startup_stm32f303xc.s</FileName>
+              <FileType>2</FileType>
+              <FilePath>.\Sources\CMSIS\Device\ST\STM32F3xx\Source\Templates\arm\startup_stm32f303xc.s</FilePath>
+            </File>
+          </Files>
         </Group>
         <Group>
           <GroupName>libs</GroupName>
+          <Files>
+            <File>
+              <FileName>uart.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\libs\uart.c</FilePath>
+            </File>
+          </Files>
         </Group>
       </Groups>
     </Target>
