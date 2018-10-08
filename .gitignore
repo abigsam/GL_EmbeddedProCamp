@@ -62,3 +62,5 @@ DebugConfig
 *.rtf
 *.js
 license.txt
+*.scvd
+
