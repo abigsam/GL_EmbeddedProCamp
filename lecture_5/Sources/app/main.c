@@ -24,8 +24,14 @@
 #define UART_TX_PORT		(GPIOC)
 #define UART_TX_AF_NUM	(7) //datasheet, p. 48
 
+#define LED_RED_PIN			(9)
+#define LED_RED_PORT		(GPIOE)
+
 /* Functiones prototypes */
 void configSysclk(void);
+void config_led(GPIO_TypeDef *port, uint8_t pin);
+void led_on(GPIO_TypeDef *port, uint8_t pin);
+void led_off(GPIO_TypeDef *port, uint8_t pin);
 
 int main(void)
 {
@@ -34,6 +40,10 @@ int main(void)
 	
 	configSysclk(); //Switch to PLL 36 MHz
 	SystemCoreClockUpdate(); //Update CMSIS SystemCoreClock variable
+	
+	/* Config LED(s) */
+	config_led(LED_RED_PORT, LED_RED_PIN);
+	led_off(LED_RED_PORT, LED_RED_PIN);
 	
 	/* Init UART with defined configartion */
 	uconfig.baud_rate = UART_SPEED;
@@ -52,7 +62,9 @@ int main(void)
 	
 	for(;;) {
 		uart_read(UART_HANDLER, buffer, ECHO_DEPTH);
+		led_on(LED_RED_PORT, LED_RED_PIN);
 		uart_write(UART_HANDLER, buffer, ECHO_DEPTH);
+		led_off(LED_RED_PORT, LED_RED_PIN);
 	}
 	
 	return 0;
@@ -60,8 +72,7 @@ int main(void)
 
 
 /*
- * @brief		Configure SYSCLK ot maximum for
- *					HSI frequency (36 MHz)
+ * @brief		Configure SYSCLK ot maximum for HSI frequency (36 MHz)
  * @param		None
  * @retval	None
 */
@@ -80,5 +91,45 @@ void configSysclk(void)
 	temp &= ~0x3u;
 	temp |= (1 << 1); //Switch to PLL
 	RCC->CFGR = temp;
+}
+
+
+/*
+ * @brief		Configure LED on board
+ * @param		port: pointer to the LED port registers
+ * @param   pin: LED pin number
+ * @retval	None
+*/
+void config_led(GPIO_TypeDef *port, uint8_t pin)
+{
+	port->MODER &= ~(GPIO_MODER_MODER0_Msk << (pin*2)); //Clear pin mode register
+	port->MODER |= 1u << (pin*2); //Set pins as output
+	port->PUPDR &= ~(GPIO_PUPDR_PUPDR0_Msk << (pin*2)); //Switch off pull-up/pull-down
+	port->OTYPER &= ~(1u << pin); //Configure pin output driver as push-pull
+	port->OSPEEDR &= ~(GPIO_OSPEEDER_OSPEEDR0_Msk << pin); //Set output speed as low
+}
+
+
+/*
+ * @brief		Switch LED on
+ * @param		port: pointer to the LED port registers
+ * @param   pin: LED pin number
+ * @retval	None
+*/
+void led_on(GPIO_TypeDef *port, uint8_t pin)
+{
+	port->ODR |= (1u << pin);
+}
+
+
+/*
+ * @brief		Switch LED off
+ * @param		port: pointer to the LED port registers
+ * @param   pin: LED pin number
+ * @retval	None
+*/
+void led_off(GPIO_TypeDef *port, uint8_t pin)
+{
+	port->ODR &= ~(1u << pin);
 }
 
