@@ -123,11 +123,12 @@ UART_Status uart_read(USART_TypeDef *uartx, uint8_t *buff, uint16_t bytes)
 	if ((0 == buff) || (0 == bytes)) {
 		return UART_WRONG_PARAM;
 	}
+	/* Wait for RX not busy */
+	while(uartx->ISR & USART_ISR_BUSY) {}
 	/* Read specified number of bytes */
 	for (byte_cnt = 0u; byte_cnt < bytes; byte_cnt++) {
-		while(!(uartx->ISR & USART_ISR_RXNE)) {
-			*(buff + byte_cnt) = uartx->RDR;
-		}
+		while(!(uartx->ISR & USART_ISR_RXNE)) {} //Wait for read data register not empty
+		*(buff + byte_cnt) = uartx->RDR;
 	}
 	return UART_OK;
 }
@@ -143,14 +144,19 @@ UART_Status uart_read(USART_TypeDef *uartx, uint8_t *buff, uint16_t bytes)
   */
 UART_Status uart_write(USART_TypeDef *uartx, uint8_t *buff, uint16_t bytes)
 {
-	
+	uint16_t byte_cnt;
 	/* Check input parameters */
 	ASSERT_UART_PTR(uartx);
 	if ((0 == buff) || (0 == bytes)) {
 		return UART_WRONG_PARAM;
 	}
-	
-	
+	/* Wait for transmitter is ready */
+	while (!(uartx->ISR & USART_ISR_TC)) {}
+	/* Write specified number of bytes */
+	for (byte_cnt = 0u; byte_cnt < bytes; byte_cnt++) {
+		while(!(uartx->ISR & USART_ISR_TXE)) {} //Transmit data register empty
+		uartx->TDR = *(buff + byte_cnt);
+	}
 	return UART_OK;
 }
 
