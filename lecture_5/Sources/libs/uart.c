@@ -69,7 +69,7 @@ UART_Status uart_open(USART_TypeDef *uartx)
 	/* Check input parameters */
 	ASSERT_UART_PTR(uartx);
 	
-	uartx->CR1 |= USART_CR1_UE;
+	uartx->CR1 |= (USART_CR1_UE | USART_CR1_TE | USART_CR1_RE);
 	return UART_OK;
 }
 
@@ -85,7 +85,7 @@ UART_Status uart_close(USART_TypeDef *uartx)
 	/* Check input parameters */
 	ASSERT_UART_PTR(uartx);
 	
-	uartx->CR1 &= ~USART_CR1_UE;
+	uartx->CR1 &= ~(USART_CR1_UE | USART_CR1_TE | USART_CR1_RE);
 	return UART_OK;
 }
 
