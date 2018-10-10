@@ -150,7 +150,6 @@ UART_Status uart_write(USART_TypeDef *uartx, uint8_t *buff, uint16_t bytes)
 		return UART_WRONG_PARAM;
 	}
 	
-	uartx->
 	
 	return UART_OK;
 }
