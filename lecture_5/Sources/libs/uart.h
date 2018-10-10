@@ -32,7 +32,30 @@ typedef enum {
 	UART_WRONG_PARAM
 } UART_Status;
 
-UART_Status uart_init(USART_TypeDef *uartx, uint32_t baud_rate, UART_WordLen wlen, UART_Parity parity, UART_Stopbits sbit);
+typedef struct {
+	GPIO_TypeDef *port;		/* Pointer to the port registers */
+	uint8_t 			pin;		/* Pin number */
+	uint8_t 			af_num;	/* Pin alternate function number (see datasheet) */
+} UART_PinConfig;
+
+typedef struct {
+	uint32_t     		baud_rate; /* UART baud rate (speed) */
+	UART_WordLen		word_len;  /* UART word length */
+	UART_Parity  		parity;		 /* UART parity */
+	UART_Stopbits 	stop_bit;  /* UART stop bit configuration */
+	UART_PinConfig 	rx_pin;    /* UART RX pin configuration */
+	UART_PinConfig 	tx_pin;		 /* UART TX pin configuration */
+} UART_Config;
+
+/**
+  * Declaration for internal used functions
+*/
+static void init_gpio(UART_PinConfig *pinc);
+
+/**
+  * Declaration for global functions
+*/
+UART_Status uart_init(USART_TypeDef *uartx, UART_Config *config);
 UART_Status uart_open(USART_TypeDef *uartx);
 UART_Status uart_close(USART_TypeDef *uartx);
 UART_Status uart_deinit(USART_TypeDef *uartx);

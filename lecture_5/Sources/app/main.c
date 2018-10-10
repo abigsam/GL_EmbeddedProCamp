@@ -15,8 +15,14 @@
 #define UART_BITS				(UART_Word_8bit)
 #define UART_PARITY			(UART_Parity_None)
 #define UART_STOP_BIT		(UART_Stopbit_1)
-
 #define ECHO_DEPTH			(1u)
+
+#define UART_RX_GPIO		(5)
+#define UART_RX_PORT		(GPIOC)
+#define UART_RX_AF_NUM	(7) //datasheet, p. 48
+#define UART_TX_GPIO		(4)
+#define UART_TX_PORT		(GPIOC)
+#define UART_TX_AF_NUM	(7) //datasheet, p. 48
 
 /* Functiones prototypes */
 void configSysclk(void);
@@ -24,13 +30,24 @@ void configSysclk(void);
 int main(void)
 {
 	uint8_t buffer[ECHO_DEPTH+2u] = {0u};
+	UART_Config uconfig;
 	
 	configSysclk(); //Switch to PLL 36 MHz
 	SystemCoreClockUpdate(); //Update CMSIS SystemCoreClock variable
 	
 	/* Init UART with defined configartion */
-	uart_init(UART_HANDLER, UART_SPEED, UART_BITS, UART_PARITY, UART_STOP_BIT);
-	
+	uconfig.baud_rate = UART_SPEED;
+	uconfig.parity = UART_PARITY;
+	uconfig.word_len = UART_BITS;
+	uconfig.stop_bit = UART_STOP_BIT;
+	uconfig.rx_pin.port = UART_RX_PORT;
+	uconfig.rx_pin.pin  = UART_RX_GPIO;
+	uconfig.rx_pin.pin  = UART_RX_GPIO;
+	uconfig.tx_pin.port = UART_TX_PORT;
+	uconfig.tx_pin.pin  = UART_TX_GPIO;
+	uconfig.tx_pin.pin  = UART_TX_GPIO;
+	//
+	uart_init(UART_HANDLER, &uconfig);
 	uart_open(UART_HANDLER);
 	
 	for(;;) {

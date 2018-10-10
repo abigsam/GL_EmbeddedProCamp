@@ -16,6 +16,27 @@
 																					sb != UART_Stopbit_0_5 && \
 																					sb != UART_Stopbit_2 && \
 																					sb != UART_Stopbit_1_5 ) return UART_WRONG_PARAM; } while(0);
+/* */
+#define SOME
+
+
+/**
+  * @brief  Init UART GPIOs
+	*
+  * @param  pinc: pointer to UART pin configuration (port, pin number, AF number)
+  * @retval None
+  */
+static void init_gpio(UART_PinConfig *pinc)
+{
+	uint32_t tmp = 0u;
+	pinc->port->MODER &= ~(GPIO_MODER_MODER0_Msk << (pinc->pin*2)); //Clear pin mode register
+	pinc->port->MODER |= ~(2u << (pinc->pin*2)); //Set pins as Alternate Function
+	pinc->port->PUPDR &= ~(GPIO_PUPDR_PUPDR0_Msk << (pinc->pin*2)); //Switch off pull-up/pull-down
+	pinc->port->OTYPER &= ~(1u << (pinc->pin)); //Configure pin output driver as push-pull
+	tmp = pinc->pin / 8; //Find out AFR register number
+	pinc->port->AFR[tmp] &= ~(GPIO_AFRL_AFRL0_Msk << (pinc->pin*4)); //Clear alternate function register
+	pinc->port->AFR[tmp] |= pinc->af_num << (pinc->pin*4); //Write alternate function number
+}
 
 
 /**
@@ -31,29 +52,31 @@
 	*					UART_Stopbit_1, UART_Stopbit_2, UART_Stopbit_0_5, UART_Stopbit_1_5
   * @retval UART_OK if all OK
   */
-UART_Status uart_init(USART_TypeDef *uartx, uint32_t baud_rate, UART_WordLen wlen, UART_Parity parity, UART_Stopbits sbit)
+UART_Status uart_init(USART_TypeDef *uartx, UART_Config *config)// uint32_t baud_rate, UART_WordLen wlen, UART_Parity parity, UART_Stopbits sbit)
 {
 	/* Check input parameters */
 	ASSERT_UART_PTR(uartx);
-	ASSERT_BAUD_RATE(baud_rate);
-	ASSERT_WORD_BITS(wlen);
-	ASSERT_PARITY(parity);
+	ASSERT_BAUD_RATE(config->baud_rate);
+	ASSERT_WORD_BITS(config->word_len);
+	ASSERT_PARITY(config->parity);
 	/* Configure UARTx */
 	uart_close(uartx); //Disable UART
 	/* Configure baud rate (oversampling 16 by default)
 	 * baud_rate = Fck / baud_rate (Reference Manual p. 901)
 	 * SystemCoreClock -- from system_stm32f3xx.h
 	*/
-	uartx->BRR = (uint16_t) (SystemCoreClock / baud_rate);
+	uartx->BRR = (uint16_t) (SystemCoreClock / config->baud_rate);
 	/* Configure word length */
 	uartx->CR1 &= ~USART_CR1_M0_Msk;
-	uartx->CR1 |= (uint32_t)wlen << USART_CR1_M0_Pos;
+	uartx->CR1 |= (uint32_t)(config->word_len) << USART_CR1_M0_Pos;
 	/* Configure parity */
 	uartx->CR1 &= ~(USART_CR1_PS_Msk | USART_CR1_PCE_Msk);
-	uartx->CR1 |= (uint32_t)parity << USART_CR1_PS_Pos;
+	uartx->CR1 |= (uint32_t)(config->parity) << USART_CR1_PS_Pos;
 	/* Configure stop bits */
 	uartx->CR2 &= ~USART_CR2_STOP;
-	uartx->CR2 |= (uint32_t)sbit << USART_CR2_STOP_Pos;
+	uartx->CR2 |= (uint32_t)(config->stop_bit) << USART_CR2_STOP_Pos;
+	init_gpio(&(config->rx_pin)); //Configure RX pin
+	init_gpio(&(config->tx_pin)); //Configure TX pin
 	return UART_OK;
 }
 
