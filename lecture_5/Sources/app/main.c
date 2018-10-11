@@ -43,8 +43,8 @@ int main(void)
 	UART_Config uconfig;
 	uint8_t temp = 'X';
 	
-	//config_sysclk(); //Switch to PLL 36 MHz
-	//SystemCoreClockUpdate(); //Update CMSIS SystemCoreClock variable
+	config_sysclk(); //Switch to PLL 36 MHz
+	SystemCoreClockUpdate(); //Update CMSIS SystemCoreClock variable
 	clock_control(); //Enable clocks for USART1, GPIOC, GPIOE (LEDs)
 	
 	/* Config LED(s) */
@@ -88,17 +88,19 @@ void config_sysclk(void)
 {
 	uint32_t temp = 0u;
 	/* Change PLL configuration */
-	RCC->CR &= ~(1 << 24); //Disable PLL
-	while(RCC->CR & (1 << 25)); //Wait until PLLRDY is cleared
-	//Change the desired parameter
+	RCC->CR &= ~RCC_CR_PLLON_Msk; //Disable PLL
+	while(RCC->CR & RCC_CR_PLLRDY_Msk); //Wait until PLLRDY is cleared
+	/* Change the desired parameter */
 	RCC->CFGR &= ~(0xf << 18); //Clear PLL Mul
 	RCC->CFGR |= (0x7 << 18); //Set PLL Mul to 0b0111 (x9)
-	RCC->CR |= (1 << 24); //Enable PLL
+	RCC->CR |= RCC_CR_PLLON_Msk; //Enable PLL
+	while(!(RCC->CR & RCC_CR_PLLRDY_Msk)); //Wait until PLLRDY is set
 	/* System clock Mux to PLL */
 	temp = RCC->CFGR;
-	temp &= ~0x3u;
-	temp |= (1 << 1); //Switch to PLL
+	temp &= ~RCC_CFGR_SW_Msk;
+	temp |= RCC_CFGR_SW_PLL << RCC_CFGR_SW_Pos; //Switch to PLL
 	RCC->CFGR = temp;
+	while ( (RCC->CFGR & RCC_CFGR_SWS_Msk) != RCC_CFGR_SWS_PLL ); //Wait for Switch to PLL source
 }
 
 
