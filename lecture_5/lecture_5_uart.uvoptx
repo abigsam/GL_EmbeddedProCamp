@@ -150,18 +150,18 @@
         <Bp>
           <Number>0</Number>
           <Type>0</Type>
-          <LineNumber>298</LineNumber>
+          <LineNumber>32</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134218594</Address>
+          <Address>134218696</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>1</BreakIfRCount>
-          <Filename>.\Sources\CMSIS\Device\ST\STM32F3xx\Source\Templates\system_stm32f3xx.c</Filename>
+          <Filename>.\Sources\libs\uart.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\lecture_5_uart\Sources/CMSIS/Device/ST/STM32F3xx/Source/Templates/system_stm32f3xx.c\298</Expression>
+          <Expression>\\lecture_5_uart\Sources/libs/uart.c\32</Expression>
         </Bp>
       </Breakpoint>
       <Tracepoint>
@@ -204,7 +204,11 @@
       <pMultCmds></pMultCmds>
       <SystemViewers>
         <Entry>
-          <Name>System Viewer\RCC</Name>
+          <Name>System Viewer\GPIOC</Name>
+          <WinId>35904</WinId>
+        </Entry>
+        <Entry>
+          <Name>System Viewer\USART1</Name>
           <WinId>35905</WinId>
         </Entry>
       </SystemViewers>
