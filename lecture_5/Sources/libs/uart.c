@@ -30,7 +30,7 @@ static void init_gpio(UART_PinConfig *pinc)
 {
 	uint32_t tmp = 0u;
 	pinc->port->MODER &= ~(GPIO_MODER_MODER0_Msk << (pinc->pin*2)); //Clear pin mode register
-	pinc->port->MODER |= ~(2u << (pinc->pin*2)); //Set pins as Alternate Function
+	pinc->port->MODER |= 2u << (pinc->pin*2); //Set pins as Alternate Function
 	pinc->port->PUPDR &= ~(GPIO_PUPDR_PUPDR0_Msk << (pinc->pin*2)); //Switch off pull-up/pull-down
 	pinc->port->OTYPER &= ~(1u << (pinc->pin)); //Configure pin output driver as push-pull
 	tmp = pinc->pin / 8; //Find out AFR register number
