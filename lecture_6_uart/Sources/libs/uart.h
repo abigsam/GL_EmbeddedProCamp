@@ -62,5 +62,8 @@ UART_Status uart_deinit(USART_TypeDef *uartx);
 UART_Status uart_read(USART_TypeDef *uartx, uint8_t *buff, uint16_t bytes);
 UART_Status uart_write(USART_TypeDef *uartx, uint8_t *buff, uint16_t bytes);
 
+UART_Status uart_interrupt_read(USART_TypeDef *uartx, uint8_t *buff, uint16_t bytes);
+UART_Status uart_interrupt_write(USART_TypeDef *uartx, uint8_t *buff, uint16_t bytes);
+
 
 #endif //___UART_H

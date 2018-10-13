@@ -119,6 +119,7 @@ void clock_control(void)
 	RCC->AHBENR |= RCC_AHBENR_GPIOEEN;
 }
 
+
 /*
  * @brief		Configure LED on board
  * @param		port: pointer to the LED port registers
@@ -135,3 +136,12 @@ void config_led(GPIO_TypeDef *port, uint8_t pin)
 }
 
 
+/*
+ * @brief		USART1 interrupt handler
+ * @param		None
+ * @retval	None
+*/
+void USART1_IRQHandler(void)
+{
+	
+}
