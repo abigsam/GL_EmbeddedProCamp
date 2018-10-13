@@ -60,15 +60,15 @@ static void init_gpio(UART_PinConfig *pinc);
 /**
   * Declaration for global functions
 */
-UART_Status uart_init(USART_TypeDef *uartx, UART_Config *config);
-UART_Status uart_open(USART_TypeDef *uartx);
-UART_Status uart_close(USART_TypeDef *uartx);
-UART_Status uart_deinit(USART_TypeDef *uartx);
-UART_Status uart_read(USART_TypeDef *uartx, uint8_t *buff, uint16_t bytes);
-UART_Status uart_write(USART_TypeDef *uartx, uint8_t *buff, uint16_t bytes);
+UART_Status uart_init(UART_Config *config, USART_TypeDef *uartx);
+UART_Status uart_open(UART_Config *config);
+UART_Status uart_close(UART_Config *config);
+UART_Status uart_deinit(UART_Config *config);
+UART_Status uart_read(UART_Config *config, uint8_t *buff, uint16_t bytes);
+UART_Status uart_write(UART_Config *config, uint8_t *buff, uint16_t bytes);
 
-UART_Status uart_interrupt_read(USART_TypeDef *uartx, uint8_t *buff, uint16_t bytes);
-UART_Status uart_interrupt_write(USART_TypeDef *uartx, uint8_t *buff, uint16_t bytes);
-void uart_interrupt_handler(USART_TypeDef *uartx);
+UART_Status uart_interrupt_read(UART_Config *config, uint8_t *buff, uint16_t bytes);
+UART_Status uart_interrupt_write(UART_Config *config, uint8_t *buff, uint16_t bytes);
+void uart_interrupt_handler(UART_Config *config);
 
 #endif //___UART_H

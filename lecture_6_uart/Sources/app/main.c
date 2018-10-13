@@ -33,7 +33,7 @@
 #define PIN_OFF(port,pin)	do { port->ODR &= ~(1u << pin); } while(0);
 
 /* Global variables */
-
+UART_Config uconfig;
 
 /* Functiones prototypes */
 void config_sysclk(void);
@@ -43,7 +43,6 @@ void config_led(GPIO_TypeDef *port, uint8_t pin);
 int main(void)
 {
 	uint8_t buffer[ECHO_DEPTH+2u] = {0u};
-	UART_Config uconfig;
 	uint8_t temp = 'X';
 	
 	config_sysclk(); //Switch to PLL 36 MHz
@@ -68,13 +67,13 @@ int main(void)
 	uconfig.tx_pin.pin    = UART_TX_PIN;
 	uconfig.tx_pin.af_num = UART_TX_AF_NUM;
 	/* Init UART with defined configartion */
-	uart_init(UART_HANDLER, &uconfig);
-	uart_open(UART_HANDLER);
+	uart_init(&uconfig, UART_HANDLER);
+	uart_open(&uconfig);
 	
 	for(;;) {
-		uart_read(UART_HANDLER, buffer, ECHO_DEPTH);
+		uart_read(&uconfig, buffer, ECHO_DEPTH);
 		PIN_ON(LED_RED_PORT, LED_RED_PIN);
-		uart_write(UART_HANDLER, buffer, ECHO_DEPTH);
+		uart_write(&uconfig, buffer, ECHO_DEPTH);
 		PIN_OFF(LED_RED_PORT, LED_RED_PIN);
 	}
 	
@@ -146,5 +145,5 @@ void config_led(GPIO_TypeDef *port, uint8_t pin)
 */
 void USART1_IRQHandler(void)
 {
-	//uart_interrupt_handler(&uconfig);
+	uart_interrupt_handler(&uconfig);
 }

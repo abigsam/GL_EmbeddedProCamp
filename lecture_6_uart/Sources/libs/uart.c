@@ -6,7 +6,7 @@
 #include "uart.h"
 
 /* Macroses */
-#define ASSERT_UART_PTR(ptr)		do { if (0 == ptr) return UART_WRONG_PARAM; } while(0);
+#define ASSERT_PTR(ptr)		      do { if (0 == ptr) return UART_WRONG_PARAM; } while(0);
 #define ASSERT_BAUD_RATE(spd)		do { if (0 == spd) return UART_WRONG_PARAM; } while(0);
 #define ASSERT_WORD_BITS(wl)		do { if (wl != UART_Word_8bit) return UART_WRONG_PARAM; } while(0);
 #define ASSERT_PARITY(prt)			do { if ( prt != UART_Parity_None && \
@@ -41,25 +41,21 @@ static void init_gpio(UART_PinConfig *pinc)
 /**
   * @brief  Init UART with specified parameters.
 	*
+  * @param  config: UARTx configuration
   * @param  uartx: pointer to UARTx
-	* @param  baud_rate: Uart baud rate, calculated based on SystemCoreClock
-	* @param  wlen: UART word length, can be one of:
-	*					UART_Word_8bit, UART_Word_9bit
-	* @param  parity: configure parity bit, can be one of:
-	*					UART_Parity_None, UART_Parity_Even, UART_Parity_Odd
-	* @param  sbit: configure UART stop bit length, can be one of:
-	*					UART_Stopbit_1, UART_Stopbit_2, UART_Stopbit_0_5, UART_Stopbit_1_5
-  * @retval UART_OK if all OK
+	* @retval UART_OK if all OK
 */
-UART_Status uart_init(USART_TypeDef *uartx, UART_Config *config)// uint32_t baud_rate, UART_WordLen wlen, UART_Parity parity, UART_Stopbits sbit)
+UART_Status uart_init(UART_Config *config, USART_TypeDef *uartx)
 {
 	/* Check input parameters */
-	ASSERT_UART_PTR(uartx);
+	ASSERT_PTR(config);
+	ASSERT_PTR(uartx);
 	ASSERT_BAUD_RATE(config->baud_rate);
 	ASSERT_WORD_BITS(config->word_len);
 	ASSERT_PARITY(config->parity);
 	/* Configure UARTx */
-	uart_close(uartx); //Disable UART
+	config->uart = uartx;
+	uart_close(config); //Disable UART
 	/* Configure baud rate (oversampling 16 by default)
 	 * baud_rate = Fck / baud_rate (Reference Manual p. 901)
 	 * SystemCoreClock -- from system_stm32f3xx.h
@@ -83,14 +79,14 @@ UART_Status uart_init(USART_TypeDef *uartx, UART_Config *config)// uint32_t baud
 /**
   * @brief  Open UART to start comunication
 	*
-  * @param  uartx: pointer to UARTx
+  * @param  config: UARTx configuration
   * @retval UART_OK if all OK
 */
-UART_Status uart_open(USART_TypeDef *uartx)
+UART_Status uart_open(UART_Config *config)
 {
 	/* Check input parameters */
-	ASSERT_UART_PTR(uartx);
-	uartx->CR1 |= (USART_CR1_UE | USART_CR1_TE | USART_CR1_RE);
+	ASSERT_PTR(config);
+	config->uart->CR1 |= (USART_CR1_UE | USART_CR1_TE | USART_CR1_RE);
 	return UART_OK;
 }
 
@@ -98,14 +94,14 @@ UART_Status uart_open(USART_TypeDef *uartx)
 /**
   * @brief  Close UART to start comunication
 	*
-  * @param  uartx: pointer to UARTx
+  * @param  config: UARTx configuration
   * @retval UART_OK if all OK
 */
-UART_Status uart_close(USART_TypeDef *uartx)
+UART_Status uart_close(UART_Config *config)
 {
 	/* Check input parameters */
-	ASSERT_UART_PTR(uartx);
-	uartx->CR1 &= ~(USART_CR1_UE | USART_CR1_TE | USART_CR1_RE);
+	ASSERT_PTR(config);
+	config->uart->CR1 &= ~(USART_CR1_UE | USART_CR1_TE | USART_CR1_RE);
 	return UART_OK;
 }
 
@@ -113,18 +109,18 @@ UART_Status uart_close(USART_TypeDef *uartx)
 /**
   * @brief  Deinit UART hardware to default values
 	*
-  * @param  uartx: pointer to UARTx
+  * @param  config: UARTx configuration
   * @retval UART_OK if all OK
 */
-UART_Status uart_deinit(USART_TypeDef *uartx)
+UART_Status uart_deinit(UART_Config *config)
 {
 	/* Check input parameters */
-	ASSERT_UART_PTR(uartx);
+	ASSERT_PTR(config);
 	
-	uart_close(uartx); //Disable UART
-	uartx->BRR = 0u;
-	uartx->CR1 = 0u;
-	uartx->CR2 = 0u;
+	uart_close(config); //Disable UART
+	config->uart->BRR = 0u;
+	config->uart->CR1 = 0u;
+	config->uart->CR2 = 0u;
 	return UART_OK;
 }
 
@@ -132,25 +128,25 @@ UART_Status uart_deinit(USART_TypeDef *uartx)
 /**
   * @brief  Receive specified number of bits via UARTx
 	*
-  * @param  uartx: pointer to UARTx
+  * @param  uconfig: UARTx configuration
 	* @param	buff: pointer to buffer
 	* @param  bytes: number of bytes to read
   * @retval UART_OK if all OK
 */
-UART_Status uart_read(USART_TypeDef *uartx, uint8_t *buff, uint16_t bytes)
+UART_Status uart_read(UART_Config *config, uint8_t *buff, uint16_t bytes)
 {
 	uint16_t byte_cnt;
 	/* Check input parameters */
-	ASSERT_UART_PTR(uartx);
+	ASSERT_PTR(config);
 	if ((0 == buff) || (0 == bytes)) {
 		return UART_WRONG_PARAM;
 	}
 	/* Wait for RX not busy */
-	while(uartx->ISR & USART_ISR_BUSY) {}
+	while(config->uart->ISR & USART_ISR_BUSY) {}
 	/* Read specified number of bytes */
 	for (byte_cnt = 0u; byte_cnt < bytes; byte_cnt++) {
-		while(!(uartx->ISR & USART_ISR_RXNE)) {} //Wait for read data register not empty
-		*(buff + byte_cnt) = uartx->RDR;
+		while(!(config->uart->ISR & USART_ISR_RXNE)) {} //Wait for read data register not empty
+		*(buff + byte_cnt) = config->uart->RDR;
 	}
 	return UART_OK;
 }
@@ -159,25 +155,25 @@ UART_Status uart_read(USART_TypeDef *uartx, uint8_t *buff, uint16_t bytes)
 /**
   * @brief  Send specified number of bits via UARTx
 	*
-  * @param  uartx: pointer to UARTx
+  * @param  uconfig: UARTx configuration
 	* @param	buff: pointer to buffer
 	* @param  bytes: number of bytes to read
   * @retval UART_OK if all OK
 */
-UART_Status uart_write(USART_TypeDef *uartx, uint8_t *buff, uint16_t bytes)
+UART_Status uart_write(UART_Config *config, uint8_t *buff, uint16_t bytes)
 {
 	uint16_t byte_cnt;
 	/* Check input parameters */
-	ASSERT_UART_PTR(uartx);
+	ASSERT_PTR(config);
 	if ((0 == buff) || (0 == bytes)) {
 		return UART_WRONG_PARAM;
 	}
 	/* Wait for transmitter is ready */
-	while (!(uartx->ISR & USART_ISR_TC)) {}
+	while (!(config->uart->ISR & USART_ISR_TC)) {}
 	/* Write specified number of bytes */
 	for (byte_cnt = 0u; byte_cnt < bytes; byte_cnt++) {
-		while(!(uartx->ISR & USART_ISR_TXE)) {} //Transmit data register empty
-		uartx->TDR = *(buff + byte_cnt);
+		while(!(config->uart->ISR & USART_ISR_TXE)) {} //Transmit data register empty
+		config->uart->TDR = *(buff + byte_cnt);
 	}
 	return UART_OK;
 }
@@ -189,7 +185,7 @@ UART_Status uart_write(USART_TypeDef *uartx, uint8_t *buff, uint16_t bytes)
   * @param  uartx: pointer to UARTx
   * @retval None
 */
-void uart_interrupt_handler(USART_TypeDef *uartx)
+void uart_interrupt_handler(UART_Config *config)
 {
 	
 }
