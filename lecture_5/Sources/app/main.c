@@ -16,18 +16,27 @@
 #define UART_PARITY			(UART_Parity_None)
 #define UART_STOP_BIT		(UART_Stopbit_1)
 
+#define ECHO_DEPTH			(1u)
 
 /* Functiones prototypes */
 void configSysclk(void);
 
 int main(void)
 {
+	uint8_t buffer[ECHO_DEPTH+2u] = {0u};
+	
 	configSysclk(); //Switch to PLL 36 MHz
 	SystemCoreClockUpdate(); //Update CMSIS SystemCoreClock variable
 	
 	/* Init UART with defined configartion */
 	uart_init(UART_HANDLER, UART_SPEED, UART_BITS, UART_PARITY, UART_STOP_BIT);
 	
+	uart_open(UART_HANDLER);
+	
+	for(;;) {
+		uart_read(UART_HANDLER, buffer, ECHO_DEPTH);
+		uart_write(UART_HANDLER, buffer, ECHO_DEPTH);
+	}
 	
 	return 0;
 }
