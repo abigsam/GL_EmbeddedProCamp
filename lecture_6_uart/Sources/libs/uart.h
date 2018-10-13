@@ -39,12 +39,17 @@ typedef struct {
 } UART_PinConfig;
 
 typedef struct {
+	USART_TypeDef   *uart;     /* UART instance */
 	uint32_t     		baud_rate; /* UART baud rate (speed) */
 	UART_WordLen		word_len;  /* UART word length */
 	UART_Parity  		parity;		 /* UART parity */
 	UART_Stopbits 	stop_bit;  /* UART stop bit configuration */
 	UART_PinConfig 	rx_pin;    /* UART RX pin configuration */
 	UART_PinConfig 	tx_pin;		 /* UART TX pin configuration */
+	uint8_t         *tx_ptr;   /* UART TX buffer pointer */
+	uint8_t         *rx_ptr;   /* UART RX buffer pointer */
+	uint16_t        tx_size;   /* UART TX buffer size */
+	uint16_t        rx_size;   /* UART RX buffer size */
 } UART_Config;
 
 /**
@@ -64,6 +69,6 @@ UART_Status uart_write(USART_TypeDef *uartx, uint8_t *buff, uint16_t bytes);
 
 UART_Status uart_interrupt_read(USART_TypeDef *uartx, uint8_t *buff, uint16_t bytes);
 UART_Status uart_interrupt_write(USART_TypeDef *uartx, uint8_t *buff, uint16_t bytes);
-
+void uart_interrupt_handler(USART_TypeDef *uartx);
 
 #endif //___UART_H

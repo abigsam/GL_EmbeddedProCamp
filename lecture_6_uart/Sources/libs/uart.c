@@ -16,8 +16,7 @@
 																					sb != UART_Stopbit_0_5 && \
 																					sb != UART_Stopbit_2 && \
 																					sb != UART_Stopbit_1_5 ) return UART_WRONG_PARAM; } while(0);
-/* */
-#define SOME
+
 
 
 /**
@@ -25,7 +24,7 @@
 	*
   * @param  pinc: pointer to UART pin configuration (port, pin number, AF number)
   * @retval None
-  */
+*/
 static void init_gpio(UART_PinConfig *pinc)
 {
 	uint32_t tmp = 0u;
@@ -51,7 +50,7 @@ static void init_gpio(UART_PinConfig *pinc)
 	* @param  sbit: configure UART stop bit length, can be one of:
 	*					UART_Stopbit_1, UART_Stopbit_2, UART_Stopbit_0_5, UART_Stopbit_1_5
   * @retval UART_OK if all OK
-  */
+*/
 UART_Status uart_init(USART_TypeDef *uartx, UART_Config *config)// uint32_t baud_rate, UART_WordLen wlen, UART_Parity parity, UART_Stopbits sbit)
 {
 	/* Check input parameters */
@@ -86,7 +85,7 @@ UART_Status uart_init(USART_TypeDef *uartx, UART_Config *config)// uint32_t baud
 	*
   * @param  uartx: pointer to UARTx
   * @retval UART_OK if all OK
-  */
+*/
 UART_Status uart_open(USART_TypeDef *uartx)
 {
 	/* Check input parameters */
@@ -101,7 +100,7 @@ UART_Status uart_open(USART_TypeDef *uartx)
 	*
   * @param  uartx: pointer to UARTx
   * @retval UART_OK if all OK
-  */
+*/
 UART_Status uart_close(USART_TypeDef *uartx)
 {
 	/* Check input parameters */
@@ -116,7 +115,7 @@ UART_Status uart_close(USART_TypeDef *uartx)
 	*
   * @param  uartx: pointer to UARTx
   * @retval UART_OK if all OK
-  */
+*/
 UART_Status uart_deinit(USART_TypeDef *uartx)
 {
 	/* Check input parameters */
@@ -137,7 +136,7 @@ UART_Status uart_deinit(USART_TypeDef *uartx)
 	* @param	buff: pointer to buffer
 	* @param  bytes: number of bytes to read
   * @retval UART_OK if all OK
-  */
+*/
 UART_Status uart_read(USART_TypeDef *uartx, uint8_t *buff, uint16_t bytes)
 {
 	uint16_t byte_cnt;
@@ -164,7 +163,7 @@ UART_Status uart_read(USART_TypeDef *uartx, uint8_t *buff, uint16_t bytes)
 	* @param	buff: pointer to buffer
 	* @param  bytes: number of bytes to read
   * @retval UART_OK if all OK
-  */
+*/
 UART_Status uart_write(USART_TypeDef *uartx, uint8_t *buff, uint16_t bytes)
 {
 	uint16_t byte_cnt;
@@ -181,5 +180,17 @@ UART_Status uart_write(USART_TypeDef *uartx, uint8_t *buff, uint16_t bytes)
 		uartx->TDR = *(buff + byte_cnt);
 	}
 	return UART_OK;
+}
+
+
+/**
+  * @brief  UARTx interrupt handler
+	*
+  * @param  uartx: pointer to UARTx
+  * @retval None
+*/
+void uart_interrupt_handler(USART_TypeDef *uartx)
+{
+	
 }
 

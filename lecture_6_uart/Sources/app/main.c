@@ -32,6 +32,9 @@
 #define PIN_ON(port,pin)	do { port->ODR |= (1u << pin); } while(0);
 #define PIN_OFF(port,pin)	do { port->ODR &= ~(1u << pin); } while(0);
 
+/* Global variables */
+
+
 /* Functiones prototypes */
 void config_sysclk(void);
 void clock_control(void);
@@ -143,5 +146,5 @@ void config_led(GPIO_TypeDef *port, uint8_t pin)
 */
 void USART1_IRQHandler(void)
 {
-	
+	//uart_interrupt_handler(&uconfig);
 }
