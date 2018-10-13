@@ -68,7 +68,6 @@ UART_Status uart_open(USART_TypeDef *uartx)
 {
 	/* Check input parameters */
 	ASSERT_UART_PTR(uartx);
-	
 	uartx->CR1 |= (USART_CR1_UE | USART_CR1_TE | USART_CR1_RE);
 	return UART_OK;
 }
@@ -84,7 +83,6 @@ UART_Status uart_close(USART_TypeDef *uartx)
 {
 	/* Check input parameters */
 	ASSERT_UART_PTR(uartx);
-	
 	uartx->CR1 &= ~(USART_CR1_UE | USART_CR1_TE | USART_CR1_RE);
 	return UART_OK;
 }
@@ -119,10 +117,18 @@ UART_Status uart_deinit(USART_TypeDef *uartx)
   */
 UART_Status uart_read(USART_TypeDef *uartx, uint8_t *buff, uint16_t bytes)
 {
-	
+	uint16_t byte_cnt;
 	/* Check input parameters */
 	ASSERT_UART_PTR(uartx);
-	
+	if ((0 == buff) || (0 == bytes)) {
+		return UART_WRONG_PARAM;
+	}
+	/* Read specified number of bytes */
+	for (byte_cnt = 0u; byte_cnt < bytes; byte_cnt++) {
+		while(!(uartx->ISR & USART_ISR_RXNE)) {
+			*(buff + byte_cnt) = uartx->RDR;
+		}
+	}
 	return UART_OK;
 }
 
@@ -140,6 +146,10 @@ UART_Status uart_write(USART_TypeDef *uartx, uint8_t *buff, uint16_t bytes)
 	
 	/* Check input parameters */
 	ASSERT_UART_PTR(uartx);
+	if ((0 == buff) || (0 == bytes)) {
+		return UART_WRONG_PARAM;
+	}
+	
 	
 	return UART_OK;
 }
