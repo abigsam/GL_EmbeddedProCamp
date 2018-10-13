@@ -1,7 +1,20 @@
+/**
+ *
+ *
+*/
 
 
+
+/* Includes */
 #include "stm32f303xc.h"
 #include "uart.h"
+
+/* Defines */
+#define UART_HANDLER		(USART1)
+#define UART_SPEED			((uint32_t) 115200)
+#define UART_BITS				(UART_Word_8bit)
+#define UART_PARITY			(UART_Parity_None)
+#define UART_STOP_BIT		(UART_Stopbit_1)
 
 
 /* Functiones prototypes */
@@ -11,6 +24,9 @@ int main(void)
 {
 	configSysclk(); //Switch to PLL 36 MHz
 	SystemCoreClockUpdate(); //Update CMSIS SystemCoreClock variable
+	
+	/* Init UART with defined configartion */
+	uart_init(UART_HANDLER, UART_SPEED, UART_BITS, UART_PARITY, UART_STOP_BIT);
 	
 	
 	return 0;

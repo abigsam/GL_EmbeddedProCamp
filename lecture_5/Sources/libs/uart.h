@@ -9,8 +9,9 @@
 #include "stm32f303xc.h"
 
 typedef enum {
-	UART_Word_8bit = (0x00),
-	UART_Word_9bit = (0x01)
+	UART_Word_8bit = (0x00)//,
+	//UART_Word_9bit = (0x01)  //Temporary not implemented
+	//UART_Word_7bit = (0x10)  //Temporary not implemented
 } UART_WordLen;
 
 typedef enum {
@@ -26,11 +27,17 @@ typedef enum {
 	UART_Stopbit_1_5 = (0x03),
 } UART_Stopbits;
 
-void uart_init(USART_TypeDef *uartx, uint16_t baud_rate, UART_WordLen wlen, UART_Parity parity, UART_Stopbits sbit);
-void uart_open(USART_TypeDef *uartx);
-void uart_close(USART_TypeDef *uartx);
-void uart_deinit(USART_TypeDef *uartx);
+typedef enum {
+	UART_OK = 0,
+	UART_WRONG_PARAM
+} UART_Status;
 
+UART_Status uart_init(USART_TypeDef *uartx, uint32_t baud_rate, UART_WordLen wlen, UART_Parity parity, UART_Stopbits sbit);
+UART_Status uart_open(USART_TypeDef *uartx);
+UART_Status uart_close(USART_TypeDef *uartx);
+UART_Status uart_deinit(USART_TypeDef *uartx);
+UART_Status uart_read(USART_TypeDef *uartx, uint8_t *buff, uint16_t bytes);
+UART_Status uart_write(USART_TypeDef *uartx, uint8_t *buff, uint16_t bytes);
 
 
 #endif //___UART_H
