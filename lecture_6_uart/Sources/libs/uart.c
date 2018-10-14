@@ -55,6 +55,7 @@ UART_Status uart_init(UART_Config *config, USART_TypeDef *uartx)
 	ASSERT_PARITY(config->parity);
 	/* Configure UARTx */
 	config->uart = uartx;
+	config->is_busy = 0u;
 	uart_close(config); //Disable UART
 	/* Configure baud rate (oversampling 16 by default)
 	 * baud_rate = Fck / baud_rate (Reference Manual p. 901)
@@ -180,13 +181,69 @@ UART_Status uart_write(UART_Config *config, uint8_t *buff, uint16_t bytes)
 
 
 /**
+  * @brief  Receive specified number of bits via UARTx
+	*         using interrupts
+  * @param  uconfig: UARTx configuration
+	* @param	buff: pointer to buffer
+	* @param  bytes: number of bytes to read
+  * @retval UART_OK if all OK
+*/
+UART_Status uart_interrupt_read(UART_Config *config, uint8_t *buff, uint16_t bytes)
+{
+	/* Check input parameters */
+	ASSERT_PTR(config);
+	if ((0 == buff) || (0 == bytes)) {
+		return UART_WRONG_PARAM;
+	}
+	/* Check if UART is busy */
+	if (1u == config->is_busy) {
+		return UART_BUSY;
+	}
+	config->is_busy = 1u; //Set UART as busy
+	/* Add read buffers parameters */
+	config->rx_ptr = buff;
+	config->rx_size = bytes;
+	return UART_OK;
+}
+
+
+/**
+  * @brief  Transfer specified number of bits via UARTx
+	*         using interrupts
+  * @param  uconfig: UARTx configuration
+	* @param	buff: pointer to buffer
+	* @param  bytes: number of bytes to read
+  * @retval UART_OK if all OK
+*/
+UART_Status uart_interrupt_write(UART_Config *config, uint8_t *buff, uint16_t bytes)
+{
+	/* Check input parameters */
+	ASSERT_PTR(config);
+	if ((0 == buff) || (0 == bytes)) {
+		return UART_WRONG_PARAM;
+	}
+	/* Check if UART is busy */
+	if (1u == config->is_busy) {
+		return UART_BUSY;
+	}
+	config->is_busy = 1u; //Set UART as busy
+	/* Add read buffers parameters */
+	config->tx_ptr = buff;
+	config->tx_size = bytes;
+	return UART_OK;
+}
+
+
+/**
   * @brief  UARTx interrupt handler
-	*
+	*					Insert this function to the appropriate IRQ handler
   * @param  uartx: pointer to UARTx
   * @retval None
 */
 void uart_interrupt_handler(UART_Config *config)
 {
-	
+	if (1u == config->is_busy) {
+		
+	}
 }
 
