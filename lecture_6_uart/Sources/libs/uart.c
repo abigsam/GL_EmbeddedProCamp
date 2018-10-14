@@ -198,25 +198,6 @@ UART_Status uart_write(UART_Config *config, uint8_t *buff, uint16_t bytes)
 
 
 /**
-  * @brief  Init UART with specified parameters.
-	*					With interrupts
-  * @param  config: UARTx configuration
-  * @param  uartx: pointer to UARTx
-	* @retval UART_OK if all OK
-*/
-UART_Status uart_interrupt_init(UART_Config *config, USART_TypeDef *uartx)
-{
-	UART_Status init_status = init_uart(config, uartx);
-	if (init_status != UART_OK) {
-		return init_status;
-	}
-	/* Enable interrupts */
-	config->uart->CR1 |= USART_CR1_TXEIE | USART_CR1_TCIE | USART_CR1_RXNEIE;
-	return UART_OK;
-}
-
-
-/**
   * @brief  Receive specified number of bits via UARTx
 	*         using interrupts
   * @param  uconfig: UARTx configuration
@@ -245,6 +226,8 @@ UART_Status uart_interrupt_read(UART_Config *config, uint8_t *buff, uint16_t byt
 	/* Add read buffers parameters */
 	config->rx_ptr = buff;
 	config->rx_size = bytes;
+	/* Enable interrupts */
+	config->uart->CR1 |= USART_CR1_RXNEIE;
 	return UART_OK;
 }
 
@@ -272,6 +255,8 @@ UART_Status uart_interrupt_write(UART_Config *config, uint8_t *buff, uint16_t by
 	/* Add read buffers parameters */
 	config->tx_ptr = buff;
 	config->tx_size = bytes;
+	/* Enable interrupts */
+	config->uart->CR1 |= (USART_CR1_TXEIE | USART_CR1_TCIE);
 	return UART_OK;
 }
 
@@ -287,16 +272,35 @@ void uart_interrupt_handler(UART_Config *config)
 	uint32_t uart_isr = config->uart->ISR;
 	/* Check interrupts */
 	if (uart_isr & USART_ISR_ORE) { //OverRun Error
+		config->uart->ICR &= ~USART_ICR_ORECF;
 		config->rx_overrun = 1u;
 	}
 	if (uart_isr & USART_ISR_RXNE) { //Read Data Register Not Empty
-		
+		*(config->rx_ptr) = config->uart->RDR; //Clear RXNE flag
+		config->rx_ptr++;
+		config->rx_size--;
+		if (0u == config->rx_size) {
+			config->uart->CR1 &= ~USART_CR1_RXNEIE; //Disable RXNE interrupt
+			config->rx_busy = 0u;
+		}
 	}
 	if (uart_isr & USART_ISR_TXE) { //Transmit Data Register Empty
-		
+		if (config->tx_size > 0u) {
+			config->uart->TDR = *(config->tx_ptr);
+			config->tx_ptr++;
+			config->tx_size--;
+			if (0u == config->tx_size) {
+				config->uart->CR1 &= ~USART_CR1_TXEIE;
+			}
+		}
+		else {
+			config->uart->RQR |= USART_RQR_TXFRQ;
+		}
 	}
 	if (uart_isr & USART_ISR_TC) { //Transmission complete
-		
+		config->uart->ICR |= USART_ICR_TCCF; //Clear TC flag
+		config->uart->CR1 &= ~USART_CR1_TCIE; //Disable TC interrupt
+		config->tx_busy = 0u;
 	}
 }
 
