@@ -55,7 +55,11 @@ static UART_Status init_uart(UART_Config *config, USART_TypeDef *uartx)
 	ASSERT_PARITY(config->parity);
 	/* Configure UARTx */
 	config->uart = uartx;
-	config->is_busy = 0u;
+	config->rx_busy = 0u;
+	config->tx_busy = 0u;
+	config->tx_size = 0u;
+	config->rx_size = 0u;
+	config->rx_overrun = 0u;
 	uart_close(config); //Disable UART
 	/* Configure baud rate (oversampling 16 by default)
 	 * baud_rate = Fck / baud_rate (Reference Manual p. 901)
@@ -228,10 +232,16 @@ UART_Status uart_interrupt_read(UART_Config *config, uint8_t *buff, uint16_t byt
 		return UART_WRONG_PARAM;
 	}
 	/* Check if UART is busy */
-	if (1u == config->is_busy) {
-		return UART_BUSY;
+	if (1u == config->rx_busy) {
+		if (1u == config->rx_overrun) { //Check fo overrun error
+			return UART_OVERRUN;
+		}
+		else {
+			return UART_BUSY;
+		}
 	}
-	config->is_busy = 1u; //Set UART as busy
+	config->rx_busy = 1u; //Set UART as busy
+	config->rx_overrun = 0u; //Clear overrun flag
 	/* Add read buffers parameters */
 	config->rx_ptr = buff;
 	config->rx_size = bytes;
@@ -255,10 +265,10 @@ UART_Status uart_interrupt_write(UART_Config *config, uint8_t *buff, uint16_t by
 		return UART_WRONG_PARAM;
 	}
 	/* Check if UART is busy */
-	if (1u == config->is_busy) {
+	if (1u == config->tx_busy) {
 		return UART_BUSY;
 	}
-	config->is_busy = 1u; //Set UART as busy
+	config->tx_busy = 1u; //Set UART as busy
 	/* Add read buffers parameters */
 	config->tx_ptr = buff;
 	config->tx_size = bytes;
@@ -274,7 +284,18 @@ UART_Status uart_interrupt_write(UART_Config *config, uint8_t *buff, uint16_t by
 */
 void uart_interrupt_handler(UART_Config *config)
 {
-	if (1u == config->is_busy) {
+	uint32_t uart_isr = config->uart->ISR;
+	/* Check interrupts */
+	if (uart_isr & USART_ISR_ORE) { //OverRun Error
+		config->rx_overrun = 1u;
+	}
+	if (uart_isr & USART_ISR_RXNE) { //Read Data Register Not Empty
+		
+	}
+	if (uart_isr & USART_ISR_TXE) { //Transmit Data Register Empty
+		
+	}
+	if (uart_isr & USART_ISR_TC) { //Transmission complete
 		
 	}
 }

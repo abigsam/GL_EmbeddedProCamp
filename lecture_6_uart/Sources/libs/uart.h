@@ -30,7 +30,8 @@ typedef enum {
 typedef enum {
 	UART_OK = 0,
 	UART_WRONG_PARAM,
-	UART_BUSY
+	UART_BUSY,
+	UART_OVERRUN
 } UART_Status;
 
 typedef struct {
@@ -51,7 +52,9 @@ typedef struct {
 	uint8_t         *rx_ptr;   /* UART RX buffer pointer */
 	uint16_t        tx_size;   /* UART TX buffer size */
 	uint16_t        rx_size;   /* UART RX buffer size */
-	uint8_t					is_busy;	 /* IF UART busy it equal to 1 */
+	uint8_t					rx_busy;	 /* If UART reciever is busy it equal to 1 */
+	uint8_t					tx_busy;	 /* If UART transmitter is busy it equal to 1 */
+	uint8_t					rx_overrun; /* If UART receiver overrun error ocurred */
 } UART_Config;
 
 /**
