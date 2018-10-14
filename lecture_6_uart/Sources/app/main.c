@@ -16,7 +16,7 @@
 #define UART_BITS				(UART_Word_8bit)
 #define UART_PARITY			(UART_Parity_None)
 #define UART_STOP_BIT		(UART_Stopbit_1)
-#define ECHO_DEPTH			(1u)
+#define ECHO_DEPTH			(3u)
 
 #define UART_RX_PIN  		(5)
 #define UART_RX_PORT		(GPIOC)
@@ -42,8 +42,9 @@ void config_led(GPIO_TypeDef *port, uint8_t pin);
 
 int main(void)
 {
-	uint8_t buffer[ECHO_DEPTH+2u] = {0u};
-	uint8_t temp = 'X';
+	uint8_t rx_buffer[ECHO_DEPTH+2u] = {0u};
+	uint8_t tx_buffer[ECHO_DEPTH+2u] = {0u};
+	uint16_t cnt;
 	
 	config_sysclk(); //Switch to PLL 36 MHz
 	SystemCoreClockUpdate(); //Update CMSIS SystemCoreClock variable
@@ -71,10 +72,16 @@ int main(void)
 	uart_open(&uconfig);
 	
 	for(;;) {
-		uart_read(&uconfig, buffer, ECHO_DEPTH);
-		PIN_ON(LED_RED_PORT, LED_RED_PIN);
-		uart_write(&uconfig, buffer, ECHO_DEPTH);
-		PIN_OFF(LED_RED_PORT, LED_RED_PIN);
+		uart_interrupt_read(&uconfig, rx_buffer, ECHO_DEPTH);
+		while(1u == uconfig.rx_busy);
+		
+		/* Copy RX buffer to TX buffer */
+		for (cnt = 0u; cnt < ECHO_DEPTH; cnt ++) {
+			*(tx_buffer + cnt) = *(rx_buffer + cnt);
+		}
+		
+		while(1u == uconfig.tx_busy);
+		uart_interrupt_write(&uconfig, tx_buffer, ECHO_DEPTH);
 	}
 	
 	return 0;
