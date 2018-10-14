@@ -50,3 +50,16 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+# Ignore Keil files
+Listings
+Objects
+DebugConfig
+*.Andrey
+*.html
+*.htm
+*.pdf
+*.rtf
+*.js
+license.txt
+*.scvd
