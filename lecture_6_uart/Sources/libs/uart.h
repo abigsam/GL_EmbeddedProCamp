@@ -58,6 +58,7 @@ typedef struct {
   * Declaration for internal used functions
 */
 static void init_gpio(UART_PinConfig *pinc);
+static UART_Status init_uart(UART_Config *config, USART_TypeDef *uartx);
 
 /**
   * Declaration for global functions
@@ -69,6 +70,7 @@ UART_Status uart_deinit(UART_Config *config);
 UART_Status uart_read(UART_Config *config, uint8_t *buff, uint16_t bytes);
 UART_Status uart_write(UART_Config *config, uint8_t *buff, uint16_t bytes);
 
+UART_Status uart_interrupt_init(UART_Config *config, USART_TypeDef *uartx);
 UART_Status uart_interrupt_read(UART_Config *config, uint8_t *buff, uint16_t bytes);
 UART_Status uart_interrupt_write(UART_Config *config, uint8_t *buff, uint16_t bytes);
 void uart_interrupt_handler(UART_Config *config);

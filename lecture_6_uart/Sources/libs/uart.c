@@ -21,7 +21,7 @@
 
 /**
   * @brief  Init UART GPIOs
-	*
+	*					Private function
   * @param  pinc: pointer to UART pin configuration (port, pin number, AF number)
   * @retval None
 */
@@ -39,13 +39,13 @@ static void init_gpio(UART_PinConfig *pinc)
 
 
 /**
-  * @brief  Init UART with specified parameters.
-	*
+  * @brief  Init UART
+	*					Private function
   * @param  config: UARTx configuration
   * @param  uartx: pointer to UARTx
-	* @retval UART_OK if all OK
+  * @retval UART_OK if all OK
 */
-UART_Status uart_init(UART_Config *config, USART_TypeDef *uartx)
+static UART_Status init_uart(UART_Config *config, USART_TypeDef *uartx)
 {
 	/* Check input parameters */
 	ASSERT_PTR(config);
@@ -74,6 +74,19 @@ UART_Status uart_init(UART_Config *config, USART_TypeDef *uartx)
 	init_gpio(&(config->rx_pin)); //Configure RX pin
 	init_gpio(&(config->tx_pin)); //Configure TX pin
 	return UART_OK;
+}
+
+
+/**
+  * @brief  Init UART with specified parameters.
+	*					Without interrupts
+  * @param  config: UARTx configuration
+  * @param  uartx: pointer to UARTx
+	* @retval UART_OK if all OK
+*/
+UART_Status uart_init(UART_Config *config, USART_TypeDef *uartx)
+{
+	return init_uart(config, uartx);
 }
 
 
@@ -176,6 +189,25 @@ UART_Status uart_write(UART_Config *config, uint8_t *buff, uint16_t bytes)
 		while(!(config->uart->ISR & USART_ISR_TXE)) {} //Transmit data register empty
 		config->uart->TDR = *(buff + byte_cnt);
 	}
+	return UART_OK;
+}
+
+
+/**
+  * @brief  Init UART with specified parameters.
+	*					With interrupts
+  * @param  config: UARTx configuration
+  * @param  uartx: pointer to UARTx
+	* @retval UART_OK if all OK
+*/
+UART_Status uart_interrupt_init(UART_Config *config, USART_TypeDef *uartx)
+{
+	UART_Status init_status = init_uart(config, uartx);
+	if (init_status != UART_OK) {
+		return init_status;
+	}
+	/* Enable interrupts */
+	config->uart->CR1 |= USART_CR1_TXEIE | USART_CR1_TCIE | USART_CR1_RXNEIE;
 	return UART_OK;
 }
 
