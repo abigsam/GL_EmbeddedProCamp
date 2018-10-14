@@ -16,7 +16,7 @@
 #define UART_BITS				(UART_Word_8bit)
 #define UART_PARITY			(UART_Parity_None)
 #define UART_STOP_BIT		(UART_Stopbit_1)
-#define ECHO_DEPTH			(3u)
+#define ECHO_DEPTH			(1u)
 
 #define UART_RX_PIN  		(5)
 #define UART_RX_PORT		(GPIOC)
@@ -27,6 +27,8 @@
 
 #define LED_RED_PIN			(9)
 #define LED_RED_PORT		(GPIOE)
+
+#define NVIC_PRIORITYGROUP_4         (0x00000003U)
 
 /* Macroses */
 #define PIN_ON(port,pin)	do { port->ODR |= (1u << pin); } while(0);
@@ -39,6 +41,7 @@ UART_Config uconfig;
 void config_sysclk(void);
 void clock_control(void);
 void config_led(GPIO_TypeDef *port, uint8_t pin);
+void config_uart(void);
 
 int main(void)
 {
@@ -54,22 +57,8 @@ int main(void)
 	config_led(LED_RED_PORT, LED_RED_PIN);
 	PIN_OFF(LED_RED_PORT, LED_RED_PIN);
 	
-	/* Setup configartion structure */
-	uconfig.baud_rate = UART_SPEED;
-	uconfig.parity = UART_PARITY;
-	uconfig.word_len = UART_BITS;
-	uconfig.stop_bit = UART_STOP_BIT;
-	/* RX pin */
-	uconfig.rx_pin.port   = UART_RX_PORT;
-	uconfig.rx_pin.pin    = UART_RX_PIN;
-	uconfig.rx_pin.af_num = UART_RX_AF_NUM;
-	/* TX pin */
-	uconfig.tx_pin.port   = UART_TX_PORT;
-	uconfig.tx_pin.pin    = UART_TX_PIN;
-	uconfig.tx_pin.af_num = UART_TX_AF_NUM;
-	/* Init UART with defined configartion */
-	uart_init(&uconfig, UART_HANDLER);
-	uart_open(&uconfig);
+	/* Configure UART & interrupts */
+	config_uart();
 	
 	for(;;) {
 		uart_interrupt_read(&uconfig, rx_buffer, ECHO_DEPTH);
@@ -85,6 +74,17 @@ int main(void)
 	}
 	
 	return 0;
+}
+
+
+/*
+ * @brief		USART1 interrupt handler
+ * @param		None
+ * @retval	None
+*/
+void USART1_IRQHandler(void)
+{
+	uart_interrupt_handler(&uconfig);
 }
 
 
@@ -130,6 +130,35 @@ void clock_control(void)
 
 
 /*
+ * @brief		Configure UART
+ * @param		None
+ * @retval	None
+*/
+void config_uart(void)
+{
+	uconfig.baud_rate = UART_SPEED;
+	uconfig.parity = UART_PARITY;
+	uconfig.word_len = UART_BITS;
+	uconfig.stop_bit = UART_STOP_BIT;
+	/* RX pin */
+	uconfig.rx_pin.port   = UART_RX_PORT;
+	uconfig.rx_pin.pin    = UART_RX_PIN;
+	uconfig.rx_pin.af_num = UART_RX_AF_NUM;
+	/* TX pin */
+	uconfig.tx_pin.port   = UART_TX_PORT;
+	uconfig.tx_pin.pin    = UART_TX_PIN;
+	uconfig.tx_pin.af_num = UART_TX_AF_NUM;
+	/* Init UART with defined configartion */
+	uart_init(&uconfig, UART_HANDLER);
+	uart_open(&uconfig);
+	/* Enable interrupts for UART */
+	NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_4);
+	NVIC_SetPriority(USART1_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(), 0u, 0u));
+	NVIC_EnableIRQ(USART1_IRQn);
+}
+
+
+/*
  * @brief		Configure LED on board
  * @param		port: pointer to the LED port registers
  * @param   pin: LED pin number
@@ -144,13 +173,3 @@ void config_led(GPIO_TypeDef *port, uint8_t pin)
 	port->OSPEEDR &= ~(GPIO_OSPEEDER_OSPEEDR0_Msk << pin); //Set output speed as low
 }
 
-
-/*
- * @brief		USART1 interrupt handler
- * @param		None
- * @retval	None
-*/
-void USART1_IRQHandler(void)
-{
-	uart_interrupt_handler(&uconfig);
-}

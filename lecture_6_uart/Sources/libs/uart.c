@@ -6,6 +6,7 @@
 #include "uart.h"
 
 /* Macroses */
+#define ASSERT_INST(inst)				do { if (!IS_UART_INSTANCE(inst)) return UART_WRONG_PARAM; } while(0);
 #define ASSERT_PTR(ptr)		      do { if (0 == ptr) return UART_WRONG_PARAM; } while(0);
 #define ASSERT_BAUD_RATE(spd)		do { if (0 == spd) return UART_WRONG_PARAM; } while(0);
 #define ASSERT_WORD_BITS(wl)		do { if (wl != UART_Word_8bit) return UART_WRONG_PARAM; } while(0);
@@ -49,7 +50,7 @@ static UART_Status init_uart(UART_Config *config, USART_TypeDef *uartx)
 {
 	/* Check input parameters */
 	ASSERT_PTR(config);
-	ASSERT_PTR(uartx);
+	ASSERT_INST(uartx);
 	ASSERT_BAUD_RATE(config->baud_rate);
 	ASSERT_WORD_BITS(config->word_len);
 	ASSERT_PARITY(config->parity);
