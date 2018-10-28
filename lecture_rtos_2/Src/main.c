@@ -112,7 +112,7 @@ int main(void)
   MX_SPI1_Init();
   MX_USB_PCD_Init();
   /* USER CODE BEGIN 2 */
-
+	all_leds_off();
   /* USER CODE END 2 */
 
   /* Call init function for freertos objects (in freertos.c) */

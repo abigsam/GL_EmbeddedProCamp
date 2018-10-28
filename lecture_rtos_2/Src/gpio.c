@@ -112,6 +112,35 @@ void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 2 */
+/**
+ * Disable all LEDs
+*/
+void all_leds_off(void)
+{
+	BLUE1_LED_OFF();
+	RED1_LED_OFF();
+	ORANGE1_LED_OFF();
+	GREEN1_LED_OFF();
+	BLUE2_LED_OFF();
+	RED2_LED_OFF();
+	ORANGE2_LED_OFF();
+	GREEN2_LED_OFF();
+}
+
+/**
+ * Enable all LEDs
+*/
+void all_leds_on(void)
+{
+	BLUE1_LED_ON();
+	RED1_LED_ON();
+	ORANGE1_LED_ON();
+	GREEN1_LED_ON();
+	BLUE2_LED_ON();
+	RED2_LED_ON();
+	ORANGE2_LED_ON();
+	GREEN2_LED_ON();
+}
 
 /* USER CODE END 2 */
 

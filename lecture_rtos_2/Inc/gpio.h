@@ -90,6 +90,8 @@
 void MX_GPIO_Init(void);
 
 /* USER CODE BEGIN Prototypes */
+void all_leds_off(void);
+void all_leds_on(void);
 
 /* USER CODE END Prototypes */
 
