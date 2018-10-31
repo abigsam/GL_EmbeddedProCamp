@@ -56,6 +56,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */     
+#include "gpio.h"
 
 /* USER CODE END Includes */
 
@@ -76,13 +77,15 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
+osThreadId greenLED1TaskHandle;
 
 /* USER CODE END Variables */
 osThreadId defaultTaskHandle;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
-   
+void greenLED1Task(void const * argument);
+
 /* USER CODE END FunctionPrototypes */
 
 void StartDefaultTask(void const * argument);
@@ -118,6 +121,9 @@ void MX_FREERTOS_Init(void) {
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
+	osThreadDef(greenLED1, greenLED1Task, osPriorityNormal, 0, 128);
+	greenLED1TaskHandle = osThreadCreate(osThread(greenLED1), NULL);
+	
   /* USER CODE END RTOS_THREADS */
 
   /* USER CODE BEGIN RTOS_QUEUES */
@@ -146,7 +152,19 @@ void StartDefaultTask(void const * argument)
 
 /* Private application code --------------------------------------------------*/
 /* USER CODE BEGIN Application */
-     
+
+void greenLED1Task(void const * argument)
+{
+	for(;;)
+	{
+		LED_ON(GREEN1_LED);
+		osDelay(500u);
+		LED_OFF(GREEN1_LED);
+		osDelay(500u);
+	}
+}
+
+
 /* USER CODE END Application */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

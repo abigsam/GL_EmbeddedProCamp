@@ -63,27 +63,23 @@
 /* USER CODE END Includes */
 
 /* USER CODE BEGIN Private defines */
-//LEDs common macroses
-#define LED_ON(port,pin)			do {HAL_GPIO_WritePin(port, pin, GPIO_PIN_SET);} while(0);
-#define LED_OFF(port,pin)			do {HAL_GPIO_WritePin(port, pin, GPIO_PIN_RESET);} while(0);
-#define LED_TOGGLE(port,pin)	do {HAL_GPIO_TogglePin(port, pin);} while(0);
 //Macroses for each LED
-#define BLUE1_LED_ON()				LED_ON(LD4_GPIO_Port, LD4_Pin)
-#define BLUE1_LED_OFF()				LED_OFF(LD4_GPIO_Port, LD4_Pin)
-#define RED1_LED_ON()					LED_ON(LD3_GPIO_Port, LD3_Pin)
-#define RED1_LED_OFF()				LED_OFF(LD3_GPIO_Port, LD3_Pin)
-#define ORANGE1_LED_ON()			LED_ON(LD5_GPIO_Port, LD5_Pin)
-#define ORANGE1_LED_OFF()			LED_OFF(LD5_GPIO_Port, LD5_Pin)
-#define GREEN1_LED_ON()				LED_ON(LD7_GPIO_Port, LD7_Pin)
-#define GREEN1_LED_OFF()			LED_OFF(LD7_GPIO_Port, LD7_Pin)
-#define BLUE2_LED_ON()				LED_ON(LD9_GPIO_Port, LD9_Pin)
-#define BLUE2_LED_OFF()				LED_OFF(LD9_GPIO_Port, LD9_Pin)
-#define RED2_LED_ON()					LED_ON(LD10_GPIO_Port, LD10_Pin)
-#define RED2_LED_OFF()				LED_OFF(LD10_GPIO_Port, LD10_Pin)
-#define ORANGE2_LED_ON()			LED_ON(LD8_GPIO_Port, LD8_Pin)
-#define ORANGE2_LED_OFF()			LED_OFF(LD8_GPIO_Port, LD8_Pin)
-#define GREEN2_LED_ON()				LED_ON(LD6_GPIO_Port, LD6_Pin)
-#define GREEN2_LED_OFF()			LED_OFF(LD6_GPIO_Port, LD6_Pin)
+#define BLUE1_LED								LD4_GPIO_Port, LD4_Pin
+#define RED1_LED								LD3_GPIO_Port, LD3_Pin
+#define ORANGE1_LED							LD5_GPIO_Port, LD5_Pin
+#define GREEN1_LED							LD7_GPIO_Port, LD7_Pin
+#define BLUE2_LED								LD9_GPIO_Port, LD9_Pin
+#define RED2_LED								LD10_GPIO_Port, LD10_Pin
+#define ORANGE2_LED							LD8_GPIO_Port, LD8_Pin
+#define GREEN2_LED							LD6_GPIO_Port, LD6_Pin
+
+//LEDs common macroses
+#define MACRO_ON(port,pin)			do {HAL_GPIO_WritePin(port, pin, GPIO_PIN_SET);} while(0);
+#define MACRO_OFF(port,pin)			do {HAL_GPIO_WritePin(port, pin, GPIO_PIN_RESET);} while(0);
+#define MACRO_TOGGLE(port,pin)	do {HAL_GPIO_TogglePin(port, pin);} while(0);
+#define LED_ON(...)							MACRO_ON(__VA_ARGS__)
+#define LED_OFF(...)						MACRO_OFF(__VA_ARGS__)
+#define LED_TOGGLE(...)					MACRO_TOGGLE(__VA_ARGS__)
 
 /* USER CODE END Private defines */
 
