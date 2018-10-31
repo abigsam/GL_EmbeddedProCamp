@@ -1,8 +1,9 @@
 #MicroXplorer Configuration settings - do not modify
 FREERTOS.FootprintOK=true
-FREERTOS.IPParameters=Tasks01,configTOTAL_HEAP_SIZE,FootprintOK
+FREERTOS.IPParameters=Tasks01,configTOTAL_HEAP_SIZE,FootprintOK,configUSE_PREEMPTION
 FREERTOS.Tasks01=defaultTask,0,128,StartDefaultTask,Default,NULL
 FREERTOS.configTOTAL_HEAP_SIZE=15360
+FREERTOS.configUSE_PREEMPTION=0
 File.Version=6
 I2C1.IPParameters=Timing-I2C
 I2C1.Timing-I2C=0x2000090E
