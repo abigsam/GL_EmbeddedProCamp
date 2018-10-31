@@ -78,6 +78,13 @@
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
 osThreadId greenLED1TaskHandle;
+osThreadId greenLED2TaskHandle;
+osThreadId blueLED1TaskHandle;
+osThreadId blueLED2TaskHandle;
+osThreadId redLED1TaskHandle;
+osThreadId redLED2TaskHandle;
+osThreadId orangeLED1TaskHandle;
+osThreadId orangeLED2TaskHandle;
 
 /* USER CODE END Variables */
 osThreadId defaultTaskHandle;
@@ -85,6 +92,13 @@ osThreadId defaultTaskHandle;
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
 void greenLED1Task(void const * argument);
+void greenLED2Task(void const * argument);
+void blueLED1Task(void const * argument);
+void blueLED2Task(void const * argument);
+void redLED1Task(void const * argument);
+void redLED2Task(void const * argument);
+void orangeLED1Task(void const * argument);
+void orangeLED2Task(void const * argument);
 
 /* USER CODE END FunctionPrototypes */
 
@@ -124,6 +138,27 @@ void MX_FREERTOS_Init(void) {
 	osThreadDef(greenLED1, greenLED1Task, osPriorityNormal, 0, 128);
 	greenLED1TaskHandle = osThreadCreate(osThread(greenLED1), NULL);
 	
+	osThreadDef(greenLED2, greenLED2Task, osPriorityNormal, 0, 128);
+	greenLED2TaskHandle = osThreadCreate(osThread(greenLED2), NULL);
+	
+	osThreadDef(blueLED1, blueLED1Task, osPriorityNormal, 0, 128);
+	blueLED1TaskHandle = osThreadCreate(osThread(blueLED1), NULL);
+	
+	osThreadDef(blueLED2, blueLED2Task, osPriorityNormal, 0, 128);
+	blueLED2TaskHandle = osThreadCreate(osThread(blueLED2), NULL);
+	
+	osThreadDef(redLED1, redLED1Task, osPriorityNormal, 0, 128);
+	redLED1TaskHandle = osThreadCreate(osThread(redLED1), NULL);
+	
+	osThreadDef(redLED2, redLED2Task, osPriorityNormal, 0, 128);
+	redLED2TaskHandle = osThreadCreate(osThread(redLED2), NULL);
+	
+	osThreadDef(orangeLED1, orangeLED1Task, osPriorityNormal, 0, 128);
+	orangeLED1TaskHandle = osThreadCreate(osThread(orangeLED1), NULL);
+	
+	osThreadDef(orangeLED2, orangeLED2Task, osPriorityNormal, 0, 128);
+	orangeLED2TaskHandle = osThreadCreate(osThread(orangeLED2), NULL);
+	
   /* USER CODE END RTOS_THREADS */
 
   /* USER CODE BEGIN RTOS_QUEUES */
@@ -145,7 +180,7 @@ void StartDefaultTask(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-    osDelay(1);
+    osDelay(1000u);
   }
   /* USER CODE END StartDefaultTask */
 }
@@ -161,6 +196,84 @@ void greenLED1Task(void const * argument)
 		osDelay(500u);
 		LED_OFF(GREEN1_LED);
 		osDelay(500u);
+	}
+}
+
+void greenLED2Task(void const * argument)
+{
+	for(;;)
+	{
+		LED_ON(GREEN2_LED);
+		osDelay(400u);
+		LED_OFF(GREEN2_LED);
+		osDelay(400u);
+	}
+}
+
+void blueLED1Task(void const * argument)
+{
+	for(;;)
+	{
+		LED_ON(BLUE1_LED);
+		osDelay(300u);
+		LED_OFF(BLUE1_LED);
+		osDelay(300u);
+	}
+}
+
+void blueLED2Task(void const * argument)
+{
+	for(;;)
+	{
+		LED_ON(BLUE2_LED);
+		osDelay(600u);
+		LED_OFF(BLUE2_LED);
+		osDelay(300u);
+	}
+}
+
+void redLED1Task(void const * argument)
+{
+	for(;;)
+	{
+		LED_ON(RED1_LED);
+		osDelay(800u);
+		LED_OFF(RED1_LED);
+		osDelay(200u);
+	}
+}
+	
+	
+void redLED2Task(void const * argument)
+{
+	for(;;)
+	{
+		LED_ON(RED2_LED);
+		osDelay(200u);
+		LED_OFF(RED2_LED);
+		osDelay(800u);
+	}
+}
+
+void orangeLED1Task(void const * argument)
+{
+	for(;;)
+	{
+		LED_ON(ORANGE1_LED);
+		osDelay(1500u);
+		LED_OFF(ORANGE1_LED);
+		osDelay(1000u);
+	}
+}
+
+void orangeLED2Task(void const * argument)
+{
+	for(;;)
+	{
+		LED_ON(ORANGE2_LED);
+		osDelay(500u);
+		LED_OFF(ORANGE2_LED);
+		osDelay(3500u);
 	}
 }
 
