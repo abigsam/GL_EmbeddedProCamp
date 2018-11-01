@@ -77,14 +77,7 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
-osThreadId greenLED1TaskHandle;
-osThreadId greenLED2TaskHandle;
-osThreadId blueLED1TaskHandle;
-osThreadId blueLED2TaskHandle;
-osThreadId redLED1TaskHandle;
-osThreadId redLED2TaskHandle;
-osThreadId orangeLED1TaskHandle;
-osThreadId orangeLED2TaskHandle;
+osThreadId tempTaskHandle;
 
 /* USER CODE END Variables */
 osThreadId defaultTaskHandle;
@@ -136,28 +129,28 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
 	osThreadDef(greenLED1, greenLED1Task, osPriorityNormal, 0, 128);
-	greenLED1TaskHandle = osThreadCreate(osThread(greenLED1), NULL);
+	tempTaskHandle = osThreadCreate(osThread(greenLED1), NULL);
 	
 	osThreadDef(greenLED2, greenLED2Task, osPriorityNormal, 0, 128);
-	greenLED2TaskHandle = osThreadCreate(osThread(greenLED2), NULL);
+	tempTaskHandle = osThreadCreate(osThread(greenLED2), NULL);
 	
 	osThreadDef(blueLED1, blueLED1Task, osPriorityNormal, 0, 128);
-	blueLED1TaskHandle = osThreadCreate(osThread(blueLED1), NULL);
+	tempTaskHandle = osThreadCreate(osThread(blueLED1), NULL);
 	
 	osThreadDef(blueLED2, blueLED2Task, osPriorityNormal, 0, 128);
-	blueLED2TaskHandle = osThreadCreate(osThread(blueLED2), NULL);
+	tempTaskHandle = osThreadCreate(osThread(blueLED2), NULL);
 	
 	osThreadDef(redLED1, redLED1Task, osPriorityNormal, 0, 128);
-	redLED1TaskHandle = osThreadCreate(osThread(redLED1), NULL);
+	tempTaskHandle = osThreadCreate(osThread(redLED1), NULL);
 	
 	osThreadDef(redLED2, redLED2Task, osPriorityNormal, 0, 128);
-	redLED2TaskHandle = osThreadCreate(osThread(redLED2), NULL);
+	tempTaskHandle = osThreadCreate(osThread(redLED2), NULL);
 	
 	osThreadDef(orangeLED1, orangeLED1Task, osPriorityNormal, 0, 128);
-	orangeLED1TaskHandle = osThreadCreate(osThread(orangeLED1), NULL);
+	tempTaskHandle = osThreadCreate(osThread(orangeLED1), NULL);
 	
 	osThreadDef(orangeLED2, orangeLED2Task, osPriorityNormal, 0, 128);
-	orangeLED2TaskHandle = osThreadCreate(osThread(orangeLED2), NULL);
+	tempTaskHandle = osThreadCreate(osThread(orangeLED2), NULL);
 	
   /* USER CODE END RTOS_THREADS */
 
@@ -193,9 +186,10 @@ void greenLED1Task(void const * argument)
 	for(;;)
 	{
 		LED_ON(GREEN1_LED);
-		osDelay(500u);
+		HAL_Delay(500u);
+		osThreadYield();
 		LED_OFF(GREEN1_LED);
-		osDelay(500u);
+		HAL_Delay(500u);
 	}
 }
 
@@ -204,9 +198,10 @@ void greenLED2Task(void const * argument)
 	for(;;)
 	{
 		LED_ON(GREEN2_LED);
-		osDelay(400u);
+		HAL_Delay(200u);
+		osThreadYield();
 		LED_OFF(GREEN2_LED);
-		osDelay(400u);
+		HAL_Delay(200u);
 	}
 }
 
@@ -215,9 +210,9 @@ void blueLED1Task(void const * argument)
 	for(;;)
 	{
 		LED_ON(BLUE1_LED);
-		osDelay(300u);
+		HAL_Delay(800u);
 		LED_OFF(BLUE1_LED);
-		osDelay(300u);
+		HAL_Delay(300u);
 	}
 }
 
@@ -226,9 +221,9 @@ void blueLED2Task(void const * argument)
 	for(;;)
 	{
 		LED_ON(BLUE2_LED);
-		osDelay(600u);
+		HAL_Delay(600u);
 		LED_OFF(BLUE2_LED);
-		osDelay(300u);
+		HAL_Delay(300u);
 	}
 }
 
@@ -237,9 +232,9 @@ void redLED1Task(void const * argument)
 	for(;;)
 	{
 		LED_ON(RED1_LED);
-		osDelay(800u);
+		HAL_Delay(800u);
 		LED_OFF(RED1_LED);
-		osDelay(200u);
+		HAL_Delay(200u);
 	}
 }
 	
@@ -249,9 +244,9 @@ void redLED2Task(void const * argument)
 	for(;;)
 	{
 		LED_ON(RED2_LED);
-		osDelay(200u);
+		HAL_Delay(200u);
 		LED_OFF(RED2_LED);
-		osDelay(800u);
+		HAL_Delay(800u);
 	}
 }
 
@@ -260,9 +255,9 @@ void orangeLED1Task(void const * argument)
 	for(;;)
 	{
 		LED_ON(ORANGE1_LED);
-		osDelay(1500u);
+		HAL_Delay(1500u);
 		LED_OFF(ORANGE1_LED);
-		osDelay(1000u);
+		HAL_Delay(1000u);
 	}
 }
 
@@ -271,9 +266,9 @@ void orangeLED2Task(void const * argument)
 	for(;;)
 	{
 		LED_ON(ORANGE2_LED);
-		osDelay(500u);
+		HAL_Delay(500u);
 		LED_OFF(ORANGE2_LED);
-		osDelay(3500u);
+		HAL_Delay(3500u);
 	}
 }
 
