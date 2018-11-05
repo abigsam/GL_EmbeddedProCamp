@@ -165,15 +165,33 @@ void StartMainTask(void const * argument)
   /* USER CODE BEGIN StartMainTask */
 	BaseType_t xReturned;
 	
+	//Create task
 	xReturned = xTaskCreate(StartSlaveTask, "Slave task", 128, NULL, tskIDLE_PRIORITY, &slaveTaskHandle);
-	osDelay(5000u);
+	//Wait for some time
+	vTaskDelay(5000u);
+	//Delete task
 	vTaskDelete(slaveTaskHandle);
+	
+	LED_ON(GREEN1_LED);
+	
+	//Create task again
+	xReturned = xTaskCreate(StartSlaveTask, "Slave task", 128, NULL, tskIDLE_PRIORITY, &slaveTaskHandle);
+	vTaskDelay(3000u);
+	//Change priority of the external task
+	vTaskPrioritySet(slaveTaskHandle, tskIDLE_PRIORITY+1);
+	//Change priority of this task
+	vTaskPrioritySet(NULL, tskIDLE_PRIORITY+1);
+	//Delete task again
+	vTaskDelete(slaveTaskHandle);
+	
+	LED_ON(BLUE2_LED);
 	
   /* Infinite loop */
   for(;;)
   {
+		//Enter infinity loop and blink LED to inform task is ended
 		LED_TOGGLE(GREEN2_LED);
-    osDelay(1000u);
+    vTaskDelay(1000u);
   }
   /* USER CODE END StartMainTask */
 }
@@ -187,7 +205,7 @@ void StartSlaveTask(void * argument)
 	{
 		LED_TOGGLE(ORANGE1_LED);
 		LED_TOGGLE(RED1_LED);
-		osDelay(200u);
+		vTaskDelay(200u);
 	}
 }
 
