@@ -148,7 +148,9 @@ void StartDefaultTask(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-    osDelay(1000u);
+    //osDelay(1000u);
+		LED_ON(ORANGE2_LED);
+		vTaskDelay(250u);
   }
   /* USER CODE END StartDefaultTask */
 }
