@@ -56,6 +56,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */     
+#include "gpio.h"
 
 /* USER CODE END Includes */
 
@@ -76,6 +77,7 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
+TaskHandle_t slaveTaskHandle;
 
 /* USER CODE END Variables */
 osThreadId defaultTaskHandle;
@@ -83,7 +85,8 @@ osThreadId mainTaskHandle;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
-   
+void StartSlaveTask(void * argument);
+
 /* USER CODE END FunctionPrototypes */
 
 void StartDefaultTask(void const * argument);
@@ -145,7 +148,7 @@ void StartDefaultTask(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-    osDelay(1);
+    osDelay(1000u);
   }
   /* USER CODE END StartDefaultTask */
 }
@@ -160,17 +163,35 @@ void StartDefaultTask(void const * argument)
 void StartMainTask(void const * argument)
 {
   /* USER CODE BEGIN StartMainTask */
+	BaseType_t xReturned;
+	
+	xReturned = xTaskCreate(StartSlaveTask, "Slave task", 128, NULL, tskIDLE_PRIORITY, &slaveTaskHandle);
+	osDelay(5000u);
+	vTaskDelete(slaveTaskHandle);
+	
   /* Infinite loop */
   for(;;)
   {
-    osDelay(1);
+		LED_TOGGLE(GREEN2_LED);
+    osDelay(1000u);
   }
   /* USER CODE END StartMainTask */
 }
 
 /* Private application code --------------------------------------------------*/
 /* USER CODE BEGIN Application */
-     
+void StartSlaveTask(void * argument)
+{
+	LED_ON(ORANGE1_LED);
+	for(;;)
+	{
+		LED_TOGGLE(ORANGE1_LED);
+		LED_TOGGLE(RED1_LED);
+		osDelay(200u);
+	}
+}
+
+
 /* USER CODE END Application */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
